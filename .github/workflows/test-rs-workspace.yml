@@ -55,7 +55,7 @@ jobs:
           classification: "BUNDLE"
 
       - name: Upload pre-bundled archive package to Chassy Index
-        uses: chassyflow/actions-package-upload@master
+        uses: chassyflow/actions-package-upload@jack/add-package-version
         with:
           name: "web source files"
           architecture: "AMD64"
