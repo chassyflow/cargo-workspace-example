@@ -21,7 +21,7 @@ jobs:
         run: cargo build --release
 
       - name: Upload package to Chassy Index
-        uses: chassyflow/actions-package-upload@master
+        uses: chassyflow/actions-package-upload@jack/add-package-version
         with:
           name: "web"
           architecture: "AMD64"
@@ -44,7 +44,7 @@ jobs:
         uses: actions/checkout@v4
         
       - name: Upload archive bundle package to Chassy Index
-        uses: chassyflow/actions-package-upload@master
+        uses: chassyflow/actions-package-upload@jack/add-package-version
         with:
           name: "web source files"
           architecture: "AMD64"
