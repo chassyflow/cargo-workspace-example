@@ -24,10 +24,10 @@ jobs:
         uses: chassyflow/actions-package-upload@jack/add-package-version
         with:
           name: "web"
-          compatibility:
-            architecture: "AMD64"
-            os: "ubuntu"
-            version: "20.04"
+          architecture: "AMD64"
+          os: "ubuntu"
+          os_version: "20.04"
+          version: "0.0.1"
           type: "FILE"
           path: "**/release/web"
           classification: "EXECUTABLE"
@@ -48,10 +48,9 @@ jobs:
         uses: chassyflow/actions-package-upload@jack/add-package-version
         with:
           name: "web source files"
-          compatibility:
-            architecture: "AMD64"
-            os: "ubuntu"
-            version: "20.04"
+          architecture: "AMD64"
+          os: "ubuntu"
+          os_version: "20.04"
           type: "ARCHIVE"
           path: "**/src/**/*.rs"
           classification: "BUNDLE"
