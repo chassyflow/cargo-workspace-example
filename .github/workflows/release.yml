@@ -15,14 +15,15 @@ jobs:
     steps:
       - name: "emit app version"
         id: set-app-version
-        run: echo "VERSION=${GITHUB_REF}" >> $GITHUB_OUTPUT
+        run: echo "VERSION=${GITHUB_REF##*/v}" >> $GITHUB_OUTPUT
   build_and_upload:
     name: Build and Upload
     runs-on: ubuntu-latest
     needs:
       - fetchversion
     env:
-      CHASSY_TOKEN: ${{ secrets.CHASSY_TOKEN }}
+      CHASSY_TOKEN: ${{ secrets.CHASSY_TOKEN_DEV }}
+      BACKEND_ENV: DEV
 
     steps:
       - name: Checkout
