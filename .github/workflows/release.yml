@@ -23,7 +23,7 @@ jobs:
       - fetchversion
     env:
       CHASSY_TOKEN: ${{ secrets.CHASSY_TOKEN_DEV }}
-      BACKEND_ENV: DEV
+    
 
     steps:
       - name: Checkout
