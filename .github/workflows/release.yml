@@ -8,7 +8,7 @@ on:
 
 jobs:
   fetchversion:
-    name: set release version
+    name: extract release version
     runs-on: ubuntu-latest
     outputs:
       app-version: ${{ steps.set-app-version.outputs.VERSION }}
