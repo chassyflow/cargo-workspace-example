@@ -1,2 +1,2 @@
 [workspace]
-members = ["jmath", "web"]
+members = ["jmath", "web", "compute"]
