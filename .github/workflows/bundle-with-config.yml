@@ -1,0 +1,37 @@
+name: Build with Config
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build_and_upload:
+    name: Build and Upload
+    runs-on: ubuntu-latest
+    env:
+      CHASSY_TOKEN: ${{ secrets.CHASSY_TOKEN_DEV }}
+      BACKEND_ENV: DEV
+
+    steps:
+      - name: Checkout
+        id: checkout
+        uses: actions/checkout@v4
+
+      - name: Build
+        run: cargo build --release
+
+      - name: Construct bundle
+        run: mkdir bundle && mv **/release/compute bundle && mv **/examples/compute.toml bundle
+
+      - name: Upload package to Chassy Index
+        uses: chassyflow/actions-package-upload@v2.5.0
+        with:
+          name: "compute-with-config"
+          architecture: "AMD64"
+          os: "ubuntu"
+          os_version: "20.04"
+          version: "0.0.1"
+          type: "ARCHIVE"
+          path: "bundle/*"
+          entrypoint: |-
+            compute
+            compute.toml
