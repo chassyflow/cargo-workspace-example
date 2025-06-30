@@ -50,4 +50,5 @@ jobs:
           path: "bundle/*"
           # No need to be multiline since we'll be using an invocation
           # to supply invocation-specfic arguments
-          entrypoint: ./launcher.sh
+          entrypoint: |-
+            ./launcher.sh
