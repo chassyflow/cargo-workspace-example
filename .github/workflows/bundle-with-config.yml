@@ -24,15 +24,19 @@ jobs:
 
       # compile with release flag unless debug input is enabled
       - name: Build
-        run: cargo build $( [ "${{ github.event.inputs.debug }}" = "false" ] && echo "--release" )
+        run: cargo build $COMPILER_FLAG
+        env:
+          COMPILER_FLAG: ${{ github.event.inputs.debug == 'true' && '' || '--release' }}
 
       - name: Construct bundle
         run: |
           mkdir bundle
-          mv **/release/web bundle
-          mv **/release/compute bundle
+          mv **/$BUILD_DIR/web bundle
+          mv **/$BUILD_DIR/compute bundle
           mv **/examples/compute.toml bundle
           mv scripts/launcher.sh bundle
+        env:
+          BUILD_DIR: ${{ github.event.inputs.debug == 'true' && 'debug' || 'release' }}
 
       - name: Upload package to Chassy Index
         uses: chassyflow/actions-package-upload@v2.5.0
