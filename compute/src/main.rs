@@ -1,6 +1,6 @@
 use std::{
-    io::{read_to_string, Read},
-    path::{Path, PathBuf},
+    io::read_to_string,
+    path::PathBuf,
 };
 
 use anyhow::{ensure, Context};
