@@ -26,13 +26,13 @@ jobs:
       - name: Build
         run: cargo build $COMPILER_FLAG
         env:
-          COMPILER_FLAG: ${{ github.event.inputs.debug == 'true' && '' || '--release' }}
+          COMPILER_FLAG: ${{ github.event.inputs.debug == 'false' && '--release' || '' }}
 
       - name: Construct bundle
         run: |
           mkdir bundle
-          mv **/$BUILD_DIR/web bundle
-          mv **/$BUILD_DIR/compute bundle
+          mv target/$BUILD_DIR/web bundle
+          mv target/$BUILD_DIR/compute bundle
           mv **/examples/compute.toml bundle
           mv scripts/launcher.sh bundle
         env:
