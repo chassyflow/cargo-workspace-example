@@ -30,11 +30,11 @@ jobs:
 
       - name: Construct bundle
         run: |
-          mkdir bundle
-          mv target/$BUILD_DIR/web bundle
-          mv target/$BUILD_DIR/compute bundle
-          mv **/examples/compute.toml bundle
-          mv scripts/launcher.sh bundle
+          zip bundle.zip \
+          target/$BUILD_DIR/web \
+          target/$BUILD_DIR/compute \
+          **/examples/compute.toml \
+          scripts/launcher.sh bundle \
         env:
           BUILD_DIR: ${{ github.event.inputs.debug == 'true' && 'debug' || 'release' }}
 
@@ -47,7 +47,7 @@ jobs:
           os_version: "20.04"
           version: "0.0.1"
           type: "ARCHIVE"
-          path: "bundle/*"
+          path: "bundle.zip"
           # No need to be multiline since we'll be using an invocation
           # to supply invocation-specfic arguments
           entrypoint: |-
