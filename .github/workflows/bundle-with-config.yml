@@ -2,6 +2,12 @@ name: Build with Config
 
 on:
   workflow_dispatch:
+    inputs:
+      debug:
+        type: boolean
+        description: Specify whether to build with debug
+        required: false
+        default: false
 
 jobs:
   build_and_upload:
@@ -16,11 +22,21 @@ jobs:
         id: checkout
         uses: actions/checkout@v4
 
+      # compile with release flag unless debug input is enabled
       - name: Build
-        run: cargo build --release
+        run: cargo build $COMPILER_FLAG
+        env:
+          COMPILER_FLAG: ${{ github.event.inputs.debug == 'false' && '--release' || '' }}
 
       - name: Construct bundle
-        run: mkdir bundle && mv **/release/compute bundle && mv **/examples/compute.toml bundle
+        run: |
+          zip -j bundle.zip \
+          target/$BUILD_DIR/web \
+          target/$BUILD_DIR/compute \
+          **/examples/compute.toml \
+          scripts/launcher.sh bundle \
+        env:
+          BUILD_DIR: ${{ github.event.inputs.debug == 'true' && 'debug' || 'release' }}
 
       - name: Upload package to Chassy Index
         uses: chassyflow/actions-package-upload@v2.5.0
@@ -31,7 +47,8 @@ jobs:
           os_version: "20.04"
           version: "0.0.1"
           type: "ARCHIVE"
-          path: "bundle/*"
+          path: "bundle.zip"
+          # No need to be multiline since we'll be using an invocation
+          # to supply invocation-specfic arguments
           entrypoint: |-
-            compute
-            compute.toml
+            ./launcher.sh
