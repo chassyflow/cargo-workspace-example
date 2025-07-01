@@ -20,7 +20,9 @@ function info() {
 }
 
 function run() {
+    echo "RUNNING COMMAND: $(pwd)/$1 ${@:2}"
     $(pwd)/$1 ${@:2}
+    echo "FINISHED EXECUTING"
 }
 
 case "$1" in
