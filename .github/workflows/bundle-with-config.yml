@@ -30,7 +30,7 @@ jobs:
 
       - name: Construct bundle
         run: |
-          zip bundle.zip \
+          zip -j bundle.zip \
           target/$BUILD_DIR/web \
           target/$BUILD_DIR/compute \
           **/examples/compute.toml \
