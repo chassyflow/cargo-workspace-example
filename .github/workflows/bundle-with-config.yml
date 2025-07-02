@@ -8,11 +8,65 @@ on:
         description: Specify whether to build with debug
         required: false
         default: false
+      testing:
+        type: boolean
+        description: Specify whether to enable or disable testing
+        required: false
+        default: false
+      linting:
+        type: boolean
+        description: Specify whether to enable or disable linting
+        required: false
+        default: false
+      formatting:
+        type: boolean
+        description: Specify whether to enable or disable formatting
+        required: false
+        default: false
 
 jobs:
+  # run cargo tests if user enables them
+  cargo-test:
+    name: Cargo Test
+    runs-on: ubuntu-latest
+    if: ${{ inputs.testing == 'true' }}
+    steps:
+      - name: Checkout
+        id: checkout
+        uses: actions/checkout@v4
+
+      - name: Run tests
+        run: cargo test
+
+  # run cargo clippy if user enables them
+  cargo-clippy:
+    runs-on: ubuntu-latest
+    name: Clippy Check
+    if: ${{ inputs.linting == 'true' }}
+    steps:
+      - name: Checkout
+        id: checkout
+        uses: actions/checkout@v4
+      - name: Run Cargo clippy
+        run: cargo clippy
+
+  # run cargo fmt if user enables them
+  fmt:
+    runs-on: ubuntu-latest
+    name: Format Check
+    if: ${{ inputs.formatting == 'true' }}
+    steps:
+      - name: Checkout
+        id: checkout
+        uses: actions/checkout@v4
+      - name: cargo fmt --check
+        run: cargo fmt --check
+
+  # Build application and upload artifact
   build_and_upload:
     name: Build and Upload
     runs-on: ubuntu-latest
+    needs: [cargo-test, cargo-fmt, cargo-lint]
     env:
       CHASSY_TOKEN: ${{ secrets.CHASSY_TOKEN_DEV }}
       BACKEND_ENV: DEV
@@ -33,7 +87,7 @@ jobs:
           zip -j bundle.zip \
           target/$BUILD_DIR/web \
           target/$BUILD_DIR/compute \
-          **/examples/compute.toml \
+          **/examples/config.toml \
           scripts/launcher.sh bundle \
         env:
           BUILD_DIR: ${{ github.event.inputs.debug == 'true' && 'debug' || 'release' }}

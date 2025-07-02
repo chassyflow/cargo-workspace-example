@@ -36,9 +36,9 @@ function info() {
 }
 
 function compute() {
-    local config_path="${2:-}"
+    local config_path="${CURRENT_HOME}${2:-}"
     llog "Running compute application with configuration ${config_path}"
-    "${CURRENT_HOME}/compute" ${CURRENT_HOME}/"$config_path"
+    "${CURRENT_HOME}/compute" $config_path"
     llog "FINISHED EXECUTING"
 }
 

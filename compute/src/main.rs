@@ -2,8 +2,6 @@ use std::{io::read_to_string, path::PathBuf};
 
 use anyhow::{ensure, Context};
 use serde::Deserialize;
-#[cfg(debug_assertions)]
-use std::fs;
 use tracing::{debug, error, info};
 use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt};
 
@@ -21,28 +19,12 @@ struct Configuration {
     pub max_n: usize,
 }
 
-#[cfg(debug_assertions)]
-fn list_files_in_dir(pathbuf: &PathBuf) {
-    let mut path = pathbuf.clone();
-    path.pop();
-    let paths = fs::read_dir(path).unwrap();
-
-    for path in paths {
-        debug!("file found: {}", path.unwrap().path().display())
-    }
-}
-
 fn get_config(args: Vec<String>) -> anyhow::Result<Configuration> {
     info!("Attempting to parse path from provided argument");
     let path = args
         .get(1)
         .map(PathBuf::from)
         .context("Failed to parse path")?;
-    #[cfg(debug_assertions)]
-    {
-        debug!("walking dir");
-        list_files_in_dir(&path);
-    }
     info!("Checking that file exists: {}", &path.to_str().unwrap());
     ensure!(path.exists(), "File doesn't exist");
     info!("Attempting to open file");
