@@ -14,7 +14,7 @@ jobs:
   cargo-test:
     name: Cargo Test
     runs-on: ubuntu-latest
-    if: ${{ inputs.debug == 'false' }}
+    if: ${{ !inputs.debug }}
     steps:
       - name: Checkout
         id: checkout
@@ -27,7 +27,7 @@ jobs:
   cargo-clippy:
     runs-on: ubuntu-latest
     name: Clippy Check
-    if: ${{ inputs.debug == 'false' }}
+    if: ${{ !inputs.debug }}
     steps:
       - name: Checkout
         id: checkout
@@ -39,7 +39,7 @@ jobs:
   cargo-fmt:
     runs-on: ubuntu-latest
     name: Format Check
-    if: ${{ inputs.debug == 'false' }}
+    if: ${{ !inputs.debug }}
     steps:
       - name: Checkout
         id: checkout
