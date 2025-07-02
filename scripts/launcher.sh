@@ -18,7 +18,7 @@ set -o nounset
 # Catch the error in case pipe expression failure
 set -o pipefail
 
-# Extract your current directory where this script is house.
+# Extract your current directory where this script is housed.
 CURRENT_HOME="$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )"
 
 function llog() {

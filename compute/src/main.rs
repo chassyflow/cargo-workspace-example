@@ -22,8 +22,10 @@ struct Configuration {
 }
 
 #[cfg(debug_assertions)]
-fn list_files_in_dir() {
-    let paths = fs::read_dir("./").unwrap();
+fn list_files_in_dir(pathbuf: &PathBuf) {
+    let mut path = pathbuf.clone();
+    path.pop();
+    let paths = fs::read_dir(path).unwrap();
 
     for path in paths {
         debug!("file found: {}", path.unwrap().path().display())
@@ -31,16 +33,16 @@ fn list_files_in_dir() {
 }
 
 fn get_config(args: Vec<String>) -> anyhow::Result<Configuration> {
-    #[cfg(debug_assertions)]
-    {
-        debug!("walking dir");
-        list_files_in_dir();
-    }
     info!("Attempting to parse path from provided argument");
     let path = args
         .get(1)
         .map(PathBuf::from)
         .context("Failed to parse path")?;
+    #[cfg(debug_assertions)]
+    {
+        debug!("walking dir");
+        list_files_in_dir(&path);
+    }
     info!("Checking that file exists: {}", &path.to_str().unwrap());
     ensure!(path.exists(), "File doesn't exist");
     info!("Attempting to open file");
