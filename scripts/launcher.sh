@@ -9,27 +9,48 @@
 # argument specifies which binary to execute while the rest
 # of the arguments are passed to the binary.
 
+# Exit on error.
+set -o errexit
+# Exit on error inside any functions/shells.
+set -o errtrace
+# Do not allow undefined vars.
+set -o nounset
+# Catch the error in case pipe expression failure
+set -o pipefail
+
+# Extract your current directory where this script is house.
+CURRENT_HOME="$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )"
+
 function info() {
     echo "Please invoke one of the following executables:"
     echo "  compute"
     echo "  web"
     echo ""
     echo "You can do so using the following syntax:"
-    echo "./launcher {executable} ...[arg]"
+    echo "./launcher compute | web ...[arg]"
     exit 1
 }
 
-function run() {
-    echo "RUNNING COMMAND: $(pwd)/$1 ${@:2}"
-    $(pwd)/$1 ${@:2}
+function compute() {
+    echo "Running compute application with configuration ${2}"
+    "${CURRENT_HOME}/compute" "${2}"
     echo "FINISHED EXECUTING"
 }
 
-case "$1" in
-  compute|web)
-    run $@
+function web() {
+  echo "Running web application with configuration ${2}"
+  "${CURRENT_HOME}/web" "${2}"
+  echo "FINISHED EXECUTING"
+}
+
+case "${1:-}" in
+  compute|-c)
+    compute "$@"
+    ;;
+  web|-w)
+    web "$@"
     ;;
   *)
+    echo "executing default action: info"
     info
-    ;;
 esac
