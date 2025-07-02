@@ -36,14 +36,15 @@ function info() {
 }
 
 function compute() {
-    llog "Running compute application with configuration ${2}"
-    "${CURRENT_HOME}/compute" "${2}"
+    local config_path="${2:-}"
+    llog "Running compute application with configuration ${config_path}"
+    "${CURRENT_HOME}/compute" "$config_path"
     llog "FINISHED EXECUTING"
 }
 
 function web() {
-  llog "Running web application with configuration ${2}"
-  "${CURRENT_HOME}/web" "${2}"
+  llog "Running web application"
+  "${CURRENT_HOME}/web"
   llog "FINISHED EXECUTING"
 }
 

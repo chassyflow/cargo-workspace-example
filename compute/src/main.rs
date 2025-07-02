@@ -21,15 +21,6 @@ struct Configuration {
     pub max_n: usize,
 }
 
-impl Default for Configuration {
-    fn default() -> Self {
-        Self {
-            computation: Computation::Pi,
-            max_n: 100000,
-        }
-    }
-}
-
 #[cfg(debug_assertions)]
 fn list_files_in_dir() {
     let paths = fs::read_dir("./").unwrap();
@@ -76,8 +67,7 @@ fn main() -> anyhow::Result<()> {
     }
     let cfg = cfg
         .or(envy::from_env::<Configuration>().context("failed to parse from env"))
-        .map_err(|e| info!("Couldn't parse config from env: {:?}", e))
-        .unwrap_or(Configuration::default());
+        .context("Failed to determine config")?;
     debug!("config: {:?}", &cfg);
     // set up tracing for logging with defaults
     match cfg {
