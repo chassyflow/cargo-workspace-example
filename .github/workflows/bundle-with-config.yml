@@ -52,12 +52,11 @@ jobs:
     name: Build and Upload
     runs-on: ubuntu-latest
     needs: [cargo-test, cargo-fmt, cargo-clippy]
-    if: >-
-          ${{
-            (needs.cargo-test.result == 'success' || needs.cargo-test.result == 'skipped') &&
-            (needs.cargo-fmt.result == 'success' || needs.cargo-fmt.result == 'skipped') &&
-            (needs.cargo-clippy.result == 'success' || needs.cargo-clippy.result == 'skipped')
-          }}
+    if: |
+      always() &&
+        (needs.cargo-test.result == 'success' || needs.cargo-test.result == 'skipped') &&
+        (needs.cargo-fmt.result == 'success' || needs.cargo-fmt.result == 'skipped') &&
+        (needs.cargo-clippy.result == 'success' || needs.cargo-clippy.result == 'skipped')
     env:
       CHASSY_TOKEN: ${{ secrets.CHASSY_TOKEN_DEV }}
       BACKEND_ENV: DEV
