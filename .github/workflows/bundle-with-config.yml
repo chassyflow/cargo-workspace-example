@@ -8,28 +8,13 @@ on:
         description: Specify whether to build with debug
         required: false
         default: false
-      testing:
-        type: boolean
-        description: Specify whether to enable or disable testing
-        required: false
-        default: false
-      linting:
-        type: boolean
-        description: Specify whether to enable or disable linting
-        required: false
-        default: false
-      formatting:
-        type: boolean
-        description: Specify whether to enable or disable formatting
-        required: false
-        default: false
 
 jobs:
-  # run cargo tests if user enables them
+  # run cargo test if not debugging
   cargo-test:
     name: Cargo Test
     runs-on: ubuntu-latest
-    if: ${{ inputs.testing == 'true' }}
+    if: ${{ inputs.debug != 'true' }}
     steps:
       - name: Checkout
         id: checkout
@@ -38,11 +23,11 @@ jobs:
       - name: Run tests
         run: cargo test
 
-  # run cargo clippy if user enables them
+  # run cargo clippy if not debugging
   cargo-clippy:
     runs-on: ubuntu-latest
     name: Clippy Check
-    if: ${{ inputs.linting == 'true' }}
+    if: ${{ inputs.debug != 'true' }}
     steps:
       - name: Checkout
         id: checkout
@@ -50,11 +35,11 @@ jobs:
       - name: Run Cargo clippy
         run: cargo clippy
 
-  # run cargo fmt if user enables them
+  # run cargo fmt if not debugging
   cargo-fmt:
     runs-on: ubuntu-latest
     name: Format Check
-    if: ${{ inputs.formatting == 'true' }}
+    if: ${{ inputs.debug != 'true' }}
     steps:
       - name: Checkout
         id: checkout
@@ -66,7 +51,7 @@ jobs:
   build_and_upload:
     name: Build and Upload
     runs-on: ubuntu-latest
-    needs: [cargo-test, cargo-fmt, cargo-lint]
+    needs: [cargo-test, cargo-fmt, cargo-clippy]
     env:
       CHASSY_TOKEN: ${{ secrets.CHASSY_TOKEN_DEV }}
       BACKEND_ENV: DEV
