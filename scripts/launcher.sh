@@ -21,26 +21,30 @@ set -o pipefail
 # Extract your current directory where this script is house.
 CURRENT_HOME="$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )"
 
+function llog() {
+    echo "[launcher] $@"
+}
+
 function info() {
-    echo "Please invoke one of the following executables:"
-    echo "  compute"
-    echo "  web"
-    echo ""
-    echo "You can do so using the following syntax:"
-    echo "./launcher compute | web ...[arg]"
+    llog "Please invoke one of the following executables:"
+    llog "  compute"
+    llog "  web"
+    llog ""
+    llog "You can do so using the following syntax:"
+    llog "./launcher compute | web ...[arg]"
     exit 1
 }
 
 function compute() {
-    echo "Running compute application with configuration ${2}"
+    llog "Running compute application with configuration ${2}"
     "${CURRENT_HOME}/compute" "${2}"
-    echo "FINISHED EXECUTING"
+    llog "FINISHED EXECUTING"
 }
 
 function web() {
-  echo "Running web application with configuration ${2}"
+  llog "Running web application with configuration ${2}"
   "${CURRENT_HOME}/web" "${2}"
-  echo "FINISHED EXECUTING"
+  llog "FINISHED EXECUTING"
 }
 
 case "${1:-}" in
@@ -51,6 +55,6 @@ case "${1:-}" in
     web "$@"
     ;;
   *)
-    echo "executing default action: info"
+    llog "executing default action: info"
     info
 esac

@@ -2,6 +2,8 @@ use std::{io::read_to_string, path::PathBuf};
 
 use anyhow::{ensure, Context};
 use serde::Deserialize;
+#[cfg(debug_assertions)]
+use std::fs;
 use tracing::{debug, error, info};
 use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt};
 
@@ -19,7 +21,30 @@ struct Configuration {
     pub max_n: usize,
 }
 
+impl Default for Configuration {
+    fn default() -> Self {
+        Self {
+            computation: Computation::Pi,
+            max_n: 100000,
+        }
+    }
+}
+
+#[cfg(debug_assertions)]
+fn list_files_in_dir() {
+    let paths = fs::read_dir("./").unwrap();
+
+    for path in paths {
+        debug!("file found: {}", path.unwrap().path().display())
+    }
+}
+
 fn get_config(args: Vec<String>) -> anyhow::Result<Configuration> {
+    #[cfg(debug_assertions)]
+    {
+        debug!("walking dir");
+        list_files_in_dir();
+    }
     info!("Attempting to parse path from provided argument");
     let path = args
         .get(1)
@@ -50,8 +75,9 @@ fn main() -> anyhow::Result<()> {
         error!("Failed to parse config via file: {:?}", e)
     }
     let cfg = cfg
-        .or(envy::from_env::<Configuration>().context("Failed to parse env"))
-        .context("Failed to determine configuration")?;
+        .or(envy::from_env::<Configuration>().context("failed to parse from env"))
+        .map_err(|e| info!("Couldn't parse config from env: {:?}", e))
+        .unwrap_or(Configuration::default());
     debug!("config: {:?}", &cfg);
     // set up tracing for logging with defaults
     match cfg {
