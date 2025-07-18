@@ -1,0 +1,58 @@
+name: Build with Config
+
+on:
+  workflow_dispatch:
+    inputs:
+      debug:
+        type: boolean
+        description: Specify whether to build with debug
+        required: false
+        default: false
+      version:
+        type: string
+        description: Version of package to upload to Chassy Index
+        required: true
+
+jobs:
+  build_and_upload:
+    name: Build and Upload
+    runs-on: ubuntu-latest
+    env:
+      CHASSY_TOKEN: ${{ secrets.CHASSY_TOKEN_DEV }}
+      BACKEND_ENV: DEV
+
+    steps:
+      - name: Checkout
+        id: checkout
+        uses: actions/checkout@v4
+
+      # compile with release flag unless debug input is enabled
+      - name: Build
+        run: cargo build $COMPILER_FLAG
+        env:
+          COMPILER_FLAG: ${{ github.event.inputs.debug == 'false' && '--release' || '' }}
+
+      - name: Construct bundle
+        run: |
+          zip -j bundle.zip \
+          target/$BUILD_DIR/web \
+          target/$BUILD_DIR/compute \
+          **/examples/compute.toml \
+          scripts/launcher.sh bundle \
+        env:
+          BUILD_DIR: ${{ github.event.inputs.debug == 'true' && 'debug' || 'release' }}
+
+      - name: Upload package to Chassy Index
+        uses: chassyflow/actions-package-upload@v2.5.0
+        with:
+          name: "compute-with-config-verioned"
+          architecture: "AMD64"
+          os: "ubuntu"
+          os_version: "20.04"
+          version: ${{ github.event.inputs.debug }}
+          type: "ARCHIVE"
+          path: "bundle.zip"
+          # No need to be multiline since we'll be using an invocation
+          # to supply invocation-specfic arguments
+          entrypoint: |-
+            ./launcher.sh
